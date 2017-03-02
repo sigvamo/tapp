@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import ReactDOM from 'react-dom';
 import TodoBox from './views/index.jsx';
 import { createStore } from 'redux';
@@ -10,7 +10,8 @@ var data = JSON.parse(document.getElementById('initial-data').getAttribute('data
 const todosReducer = function (state={todos: data}, action) {
   switch(action.type) {
     case actions.UPDATE_TODO:
-        let newState = Object.assign({}, state)
+        let newState = JSON.parse(JSON.stringify(state));
+        //let newState = Object.assign({}, state)
         let upd1 = updateRow(newState.todos, 'titel', action.todoUpdate.id, 'checked', action.todoUpdate.checked)
         newState.todos = updateRow(upd1, 'titel', action.todoUpdate.id, 'detail', action.todoUpdate.checked ? 'Done' : 'Sorry not done')
         return newState
@@ -29,4 +30,6 @@ function updateRow(tab, where, val, updfield, val2) {
 
 var Store = createStore(todosReducer)
 
-ReactDOM.render(<Provider store={Store}><TodoBox /></Provider>, document.getElementById("app"));
+ReactDOM.render(<Provider store={Store}>
+	                    <TodoBox />
+	            </Provider>, document.getElementById("app"));

@@ -16,12 +16,15 @@
     "express-react-views": "^0.10.2",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
+    "react-redux": "^4.4.6",
     "webpack": "^2.2.1"
   },
   "devDependencies": {
     "babel": "^6.23.0",
     "babel-core": "^6.23.1",
-    "react-redux": "^5.0.3",
+    "babel-plugin-transform-es2015-destructuring": "^6.23.0",
+    "babel-plugin-transform-object-rest-spread": "^6.23.0",
+    "react-redux": "^4.4.6",
     "redux": "^3.6.0"
   }
 }

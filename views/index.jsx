@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import * as Redux from 'redux';
 import { connect } from 'react-redux'
 import * as actions from '../redux_actions.js'
@@ -9,7 +9,7 @@ class TodoBox extends React.Component {
             return (
                 <div className="todoBox">
                     <h1>Todos</h1>
-                    <TodoList data={this.props.todos} func={this.props.handleChange}/>
+                    <TodoList data={this.props.todos} func={this.props.handleChange.bind(this)}/>
                     <TodoForm />
                 </div>
             );
@@ -82,6 +82,8 @@ const mapDispatchToProps = function(dispatch) {
     }
   }
 }
+
+
 
 export default connect(mapStateToProps, mapDispatchToProps)(TodoBox)
 
