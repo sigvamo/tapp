@@ -24,11 +24,11 @@ require('babel-core/register')({
 
 
 var data=[
-     {titel: 'Shopping', detail: 'sdfa sdfsdf', checked: false},
-     {titel: 'Hair cut', detail: 'asdasdasdasd df', checked: false},
-     {titel: 'Movie', detail: '13:45', checked: false},
-     {titel: 'Date', detail: '21:00', checked: false},
-     {titel: 'Buy buy', detail: '03:00', checked: false},
+     {titel: 'Shopping', detail: 'Not done', checked: false},
+     {titel: 'Hair cut', detail: 'Not done', checked: false},
+     {titel: 'Movie', detail: 'Not done', checked: false},
+     {titel: 'Date', detail: 'Not done', checked: false},
+     {titel: 'Buy buy', detail: 'Not done', checked: false},
     ]
 
 app.use('/bundle.js', function(req, res) {

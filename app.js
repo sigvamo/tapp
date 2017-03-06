@@ -3,17 +3,23 @@ import ReactDOM from 'react-dom';
 import TodoBox from './views/index.jsx';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
-import * as actions from './redux_actions.js';
+import * as Actions from './redux_actions.js';
 
 var data = JSON.parse(document.getElementById('initial-data').getAttribute('data-json'));
 
-const todosReducer = function (state={todos: data}, action) {
+const todosReducer = function (state={todos: data, todosCnt: data.length }, action) {
+  let newState = JSON.parse(JSON.stringify(state));
   switch(action.type) {
-    case actions.UPDATE_TODO:
-        let newState = JSON.parse(JSON.stringify(state));
-        //let newState = Object.assign({}, state)
+    case Actions.UPDATE_TODO:
+
         let upd1 = updateRow(newState.todos, 'titel', action.todoUpdate.id, 'checked', action.todoUpdate.checked)
-        newState.todos = updateRow(upd1, 'titel', action.todoUpdate.id, 'detail', action.todoUpdate.checked ? 'Done' : 'Sorry not done')
+        newState.todos = updateRow(upd1, 'titel', action.todoUpdate.id, 'detail', action.todoUpdate.checked ? 'Done' : 'Not done')
+        return newState
+      break;
+    case Actions.ADD_TODO:
+
+        newState.todos.push(action.todo)
+        newState.todosCnt = newState.todos.length
         return newState
       break;
     default:

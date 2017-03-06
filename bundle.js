@@ -6801,10 +6801,16 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.actionUpdateTodo = actionUpdateTodo;
+exports.actionAddTodo = actionAddTodo;
 var UPDATE_TODO = exports.UPDATE_TODO = 'UPDATE_TODO';
+var ADD_TODO = exports.ADD_TODO = 'ADD_TODO';
 
 function actionUpdateTodo(todoUpdate) {
   return { type: UPDATE_TODO, todoUpdate: todoUpdate };
+}
+
+function actionAddTodo(todoObj) {
+  return { type: ADD_TODO, todo: todoObj };
 }
 
 /***/ }),
@@ -10069,14 +10075,17 @@ var TodoBox = function (_React$Component) {
           null,
           'Todos'
         ),
-        React.createElement(TodoList, { data: this.props.todos, func: this.props.handleChange.bind(this) }),
-        React.createElement(TodoForm, null)
+        React.createElement(TodoList_, null),
+        React.createElement(TodoForm_, null),
+        React.createElement(TodoFooter_, null)
       );
     }
   }]);
 
   return TodoBox;
 }(React.Component);
+
+exports.default = TodoBox;
 
 var TodoList = function (_React$Component2) {
   _inherits(TodoList, _React$Component2);
@@ -10090,12 +10099,10 @@ var TodoList = function (_React$Component2) {
   _createClass(TodoList, [{
     key: 'render',
     value: function render() {
-      var _this3 = this;
-
-      var todo = this.props.data.map(function (todos) {
+      var todo = this.props.todos.map(function (todos) {
         return React.createElement(
-          Todo,
-          { titel: todos.titel, func: _this3.props.func, check: todos.checked, key: todos.titel },
+          Todo_,
+          { titel: todos.titel, check: todos.checked, key: todos.titel },
           todos.detail
         );
       });
@@ -10136,7 +10143,7 @@ var Todo = function (_React$Component3) {
         React.createElement(
           'td',
           { style: style.tableContent },
-          React.createElement('input', { id: this.props.titel, type: 'checkbox', checked: this.props.checked, onChange: this.props.func })
+          React.createElement('input', { id: this.props.titel, type: 'checkbox', checked: this.props.checked, onChange: this.props.handleChange })
         ),
         React.createElement(
           'td',
@@ -10162,24 +10169,77 @@ Todo.propTypes = {
 var TodoForm = function (_React$Component4) {
   _inherits(TodoForm, _React$Component4);
 
-  function TodoForm() {
+  function TodoForm(props) {
     _classCallCheck(this, TodoForm);
 
-    return _possibleConstructorReturn(this, (TodoForm.__proto__ || Object.getPrototypeOf(TodoForm)).apply(this, arguments));
+    var _this4 = _possibleConstructorReturn(this, (TodoForm.__proto__ || Object.getPrototypeOf(TodoForm)).call(this, props));
+
+    _this4.state = { value: '' };
+    return _this4;
   }
 
   _createClass(TodoForm, [{
+    key: 'handleChange',
+    value: function handleChange(event) {
+      this.state.value = event.target.value;
+    }
+  }, {
+    key: 'handleSubmit',
+    value: function handleSubmit(event) {
+      event.preventDefault();
+      this.props.handleAddTodo(this.state.value);
+      document.getElementById("frm").value = '';
+    }
+  }, {
     key: 'render',
     value: function render() {
       return React.createElement(
         'div',
         { className: 'todoForm' },
-        'I am a TodoForm.'
+        React.createElement(
+          'form',
+          { onSubmit: this.handleSubmit.bind(this) },
+          React.createElement(
+            'label',
+            null,
+            'Titel:',
+            React.createElement('input', { id: 'frm', type: 'text', name: 'titel', onChange: this.handleChange.bind(this) })
+          ),
+          React.createElement('input', { type: 'submit', value: 'Submit' })
+        )
       );
     }
   }]);
 
   return TodoForm;
+}(React.Component);
+
+var TodoFooter = function (_React$Component5) {
+  _inherits(TodoFooter, _React$Component5);
+
+  function TodoFooter() {
+    _classCallCheck(this, TodoFooter);
+
+    return _possibleConstructorReturn(this, (TodoFooter.__proto__ || Object.getPrototypeOf(TodoFooter)).apply(this, arguments));
+  }
+
+  _createClass(TodoFooter, [{
+    key: 'render',
+    value: function render() {
+      return React.createElement(
+        'div',
+        { className: 'todoFooter' },
+        React.createElement(
+          'span',
+          null,
+          'The count of todos is ',
+          this.props.cnt
+        )
+      );
+    }
+  }]);
+
+  return TodoFooter;
 }(React.Component);
 
 var style = {
@@ -10200,7 +10260,25 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
   };
 };
 
-exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(TodoBox);
+var mapStateToPropsTodoFooter = function mapStateToPropsTodoFooter(state) {
+  return { cnt: state.todosCnt };
+};
+
+var mapDispatchToPropsTodoForm = function mapDispatchToPropsTodoForm(dispatch) {
+  return {
+    handleAddTodo: function handleAddTodo(titel) {
+      dispatch(actions.actionAddTodo({ titel: titel, detail: 'Not done', checked: false }));
+    }
+  };
+};
+
+var TodoForm_ = (0, _reactRedux.connect)(null, mapDispatchToPropsTodoForm)(TodoForm);
+
+var Todo_ = (0, _reactRedux.connect)(null, mapDispatchToProps)(Todo);
+
+var TodoList_ = (0, _reactRedux.connect)(mapStateToProps)(TodoList);
+
+var TodoFooter_ = (0, _reactRedux.connect)(mapStateToPropsTodoFooter)(TodoFooter);
 
 /***/ }),
 /* 93 */
@@ -23968,7 +24046,7 @@ var _reactRedux = __webpack_require__(56);
 
 var _redux_actions = __webpack_require__(55);
 
-var actions = _interopRequireWildcard(_redux_actions);
+var Actions = _interopRequireWildcard(_redux_actions);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -23977,35 +24055,41 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 var data = JSON.parse(document.getElementById('initial-data').getAttribute('data-json'));
 
 var todosReducer = function todosReducer() {
-    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : { todos: data };
-    var action = arguments[1];
+  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : { todos: data, todosCnt: data.length };
+  var action = arguments[1];
 
-    switch (action.type) {
-        case actions.UPDATE_TODO:
-            var newState = JSON.parse(JSON.stringify(state));
-            //let newState = Object.assign({}, state)
-            var upd1 = updateRow(newState.todos, 'titel', action.todoUpdate.id, 'checked', action.todoUpdate.checked);
-            newState.todos = updateRow(upd1, 'titel', action.todoUpdate.id, 'detail', action.todoUpdate.checked ? 'Done' : 'Sorry not done');
-            return newState;
-            break;
-        default:
-            return state;
-    }
+  var newState = JSON.parse(JSON.stringify(state));
+  switch (action.type) {
+    case Actions.UPDATE_TODO:
+
+      var upd1 = updateRow(newState.todos, 'titel', action.todoUpdate.id, 'checked', action.todoUpdate.checked);
+      newState.todos = updateRow(upd1, 'titel', action.todoUpdate.id, 'detail', action.todoUpdate.checked ? 'Done' : 'Not done');
+      return newState;
+      break;
+    case Actions.ADD_TODO:
+
+      newState.todos.push(action.todo);
+      newState.todosCnt = newState.todos.length;
+      return newState;
+      break;
+    default:
+      return state;
+  }
 };
 
 function updateRow(tab, where, val, updfield, val2) {
-    tab.forEach(function (row) {
-        row[where] === val ? row[updfield] = val2 : null;
-    });
-    return tab;
+  tab.forEach(function (row) {
+    row[where] === val ? row[updfield] = val2 : null;
+  });
+  return tab;
 }
 
 var Store = (0, _redux.createStore)(todosReducer);
 
 _reactDom2.default.render(React.createElement(
-    _reactRedux.Provider,
-    { store: Store },
-    React.createElement(_index2.default, null)
+  _reactRedux.Provider,
+  { store: Store },
+  React.createElement(_index2.default, null)
 ), document.getElementById("app"));
 
 /***/ })
